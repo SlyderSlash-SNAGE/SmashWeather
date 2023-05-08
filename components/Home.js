@@ -5,8 +5,9 @@ import { Layout, Text } from '@ui-kitten/components'
 import { Platform, Switch } from 'react-native'
 import SafeArea from './SafeArea'
 import WeatherIcons from './WeatherIcons'
+import SearchCity from './SearchCity'
 
-const url = `http://api.weatherstack.com/current?access_key=4a0981798d3b5e3764fee50abf88bf6b&query=Paris`
+const url = `http://api.weatherstack.com/current?access_key=2b66facf684809286d5571dfdfb1a2f9&query=Paris`
 
 
 
@@ -52,6 +53,7 @@ const Home = () => {
                 {!loading ?<WeatherIcons weathers={data["weather_icons"]}/> :null}
                 <StatusBar style="auto" />
                 <Switch onTouchStart={handleSwitch}></Switch>
+                <SearchCity></SearchCity>
             </Layout>
         </SafeArea>
     )
