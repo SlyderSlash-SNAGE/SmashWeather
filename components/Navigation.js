@@ -1,13 +1,14 @@
 import { NavigationContainer } from '@react-navigation/native'
 import { createStackNavigator } from '@react-navigation/stack'
 import HomeScreen from './Home'
-import { DetailsScreen } from './Details'
+import SearchCity from './SearchCity'
 
 const { Navigator, Screen } = createStackNavigator()
 
 const HomeNavigator = () => (
   <Navigator screenOptions={{headerShown: false}}>
     <Screen name='Home' component={HomeScreen}/>
+    <Screen name='SearchCity' component={SearchCity}/>
   </Navigator>
 )
 

@@ -1,14 +1,12 @@
-import { Layout } from "@ui-kitten/components"
-import { Avatar } from '@ui-kitten/components'
-import { Image, Text } from "react-native"
+import { Image } from "react-native"
 
-const weatherList = (icons) => icons.map((icon, index) => <Image key={'imgWeather'+index} style={{width: '100%', height: '50%'}} source={{uri: icon}}/>)
+const weatherList = (icons) => icons.map((icon, index) => <Image key={'imgWeather'+index} style={{width: 35, height: 35}} source={{uri: icon}}/>)
 
 const WeatherIcons = ({weathers}) => {
     return (
         weathers.length === 1
         ? <Image
-          style={{width: '100%', height: '50%'}}
+          style={{width: 35, height: 35}}
           source={{uri: weathers[0]}}
         />
         : weatherList(weathers)
