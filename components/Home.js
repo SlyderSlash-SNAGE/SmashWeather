@@ -65,8 +65,11 @@ const Home = ({ navigation }) => {
         setLoading(true)
         axios.get(url)
             .then(res => {
-                setData(res.data.current)
-                setLoading(false)
+                if(res.data.current){
+                    setData(res.data.current)
+                    setLoading(false)
+                }
+                else setError(`L'appel à l'API Météo à échoué ! Mince alors !`)
             })
             .catch(err => {
                 console.error(err)
@@ -91,18 +94,18 @@ const Home = ({ navigation }) => {
             <Layout style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 <Text>{resultSMS}</Text>
                 <Text category='h1' id="title">Hello there</Text>
-                <Text>Mon OS :  {Platform.OS}</Text>
-                <Text>Ma Version : {Platform.Version}</Text>
-                <Text>TV : {Platform.isTV ?'oui':'non'}</Text>
+                <DeviceInfo />
                 <Text>Chargement est : {loading ?'en cours' :'fini'}</Text>
                 {tokenExpo && <Text>{tokenExpo}</Text>}
                 { error
                     ? <Text>{error}</Text>
                     : null
                 }
-                <Text>Observé à : {!loading ?data["observation_time"] :'en chargement'}</Text>
-                <Text>Température : {!loading ?data["temperature"] :'en chargement'}</Text>
-                {!loading ?<WeatherIcons weathers={data["weather_icons"]}/> :null}
+                {!loading 
+                    ? <Weather weathers={data}/> 
+                    : <Text>en chargement</Text>
+                }
+                <Weather.WeatherIcons />
                 <StatusBar style="auto" />
                 <Button onPress={handlePress}>Changer De Page</Button>
                 {canSendSMS ?<Text>Fonction SMS disponible</Text> :<Text>Ne peux pas envoyer de SMS</Text>}
