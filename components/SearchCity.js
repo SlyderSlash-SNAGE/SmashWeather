@@ -9,7 +9,7 @@ import * as Location from 'expo-location'
 
 export default function SearchCity() {
     // précèdement : const [city, setCity] = useState('Paris')
-    const [wLocation,setWLocation] = useState('Paris') 
+    const [wLocation,setWLocation] = useState('fetch:ip') 
     /* 
     Le parametre "query" de l'API peut prendre plusieurs valeurs :
      - Une localisation par nom, ex : Paris ou London, UnitedKingdom
@@ -22,7 +22,7 @@ export default function SearchCity() {
      Nous pouvons donc garder city comme localisation en cherchant son nom pour une meilleure lecture
      city devient alors wLocation pour Weather Location
     */
-    // précèdement : const url = `http://api.weatherstack.com/current?access_key=b39ec1ee2cc1e519a2e587b3c414e5c8&query=${wLocation}`
+    // précèdement : const url = `http://api.weatherstack.com/current?access_key=b39ec1ee2cc1e519a2e587b3c414e5c8&query=${city}`
     /*
     Nous créons une instance pour weatherstack avec Axios dans configs/api
     Cette dernière contiendra la base url : http://api.weatherstack.com
@@ -66,20 +66,20 @@ true            Si c'est le cas, nous demandons la localisation (location) avec 
                     Dans le cas, ou la promesse catch une erreure, nous indiquons une erreure via setError avec la valeure Cannot Access Location
                 Dans le cas, ou la promesse catch une erreure, nous indiquons une erreure via setError avec la valeure Access denied cause error
             */
-            s.status!='granted' 
+            s.status!=='granted' 
                 ? setError("Access denied => "+s.status)
                 : Location.getCurrentPositionAsync({})
                 .then(location => {
                     setWLocation(`${location.coords.latitude},${location.coords.longitude}`)
-                    cityFetch()
                 })
                 .catch(_e => setError("Cannot Access Location"))
                 // L'underscore "_" avant le paramètre e est la pour signaler explicitement, que nous n'utiliseront pas ce paramètre.
          })
         .catch(_e => setError("Access denied cause error"))
+        cityFetch()
     }
     useEffect(()=>{
-        cityFetch()
+        //cityFetch()
         /* 
         Nous récupérons les informations de la query par défaut ( Paris ) afin d'afficher des valeures 
             *NOTE : ( La valeure par défaut pourrait être fetch:ip afin d'avoir une localisation plus proche de celle de l'utilisateur)*

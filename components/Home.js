@@ -2,10 +2,11 @@ import {useEffect, useState} from 'react'
 import axios from 'axios'
 import { StatusBar } from 'expo-status-bar'
 import { Layout, Text, Button } from '@ui-kitten/components'
-import { Platform, Switch } from 'react-native'
+import { Platform, Switch, Device } from 'react-native'
 import SafeArea from './SafeArea'
 import WeatherIcons from './WeatherIcons'
 import * as SMS from 'expo-sms'
+import * as Notification from 'expo-notifications'
 
 const url = `http://api.weatherstack.com/current?access_key=2b66facf684809286d5571dfdfb1a2f9&query=Paris`
 
@@ -18,6 +19,36 @@ const Home = ({ navigation }) => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
     const [data, setData] = useState(false)
+    const [tokenExpo, setTokenExpo] = useState(false)
+
+
+    const subscrireToNotifications = async()=>{
+            console.log("Hey ho c'est un device")
+            const {status : existingStatus} = await Notification.getPermissionsAsync()
+            console.log(existingStatus)
+            console.log("-------------------------------------------")
+            let fStatus = existingStatus
+            if (existingStatus!=='granted'){
+                const {status} = await Notification.requestPermissionsAsync()
+                console.log(status)
+                fStatus = status
+            }
+            if(fStatus!=='granted'){
+                setError('You say, I should not pass !')
+            }
+            const token = (await Notification.getDevicePushTokenAsync())
+            console.log(token)
+            setTokenExpo(token.data)
+
+            if(Platform.OS === "android"){
+                Notification.setNotificationChannelAsync("default", {
+                    name: "default",
+                    importance: Notification.AndroidImportance.MAX,
+                    vibrationPattern: [0, 150 ,250 ,250],
+                    lightColor: "#FF231F7C"
+                })
+            }
+    }
 
     const handlePress = () => {
         navigation.navigate('SearchCity')
@@ -43,6 +74,12 @@ const Home = ({ navigation }) => {
             })
     }
     useEffect(()=> {
+        Notification.addNotificationResponseReceivedListener(
+            response => {
+                console.log("data => ", response.notification.request.content.body)
+            }
+        )
+        subscrireToNotifications()
         SMS.isAvailableAsync()
             .then(r => setcanSendSMS(r))
             .catch(_e => setcanSendSMS(false))
@@ -58,6 +95,7 @@ const Home = ({ navigation }) => {
                 <Text>Ma Version : {Platform.Version}</Text>
                 <Text>TV : {Platform.isTV ?'oui':'non'}</Text>
                 <Text>Chargement est : {loading ?'en cours' :'fini'}</Text>
+                {tokenExpo && <Text>{tokenExpo}</Text>}
                 { error
                     ? <Text>{error}</Text>
                     : null
