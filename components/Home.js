@@ -2,9 +2,9 @@ import {useEffect, useState} from 'react'
 import axios from 'axios'
 import { StatusBar } from 'expo-status-bar'
 import { Layout, Text, Button } from '@ui-kitten/components'
-import { Platform, Switch, Device } from 'react-native'
+import { DeviceInfo } from './DeviceInfo'
+import { Platform } from 'react-native'
 import SafeArea from './SafeArea'
-import WeatherIcons from './WeatherIcons'
 import * as SMS from 'expo-sms'
 import * as Notification from 'expo-notifications'
 
@@ -23,7 +23,6 @@ const Home = ({ navigation }) => {
 
 
     const subscrireToNotifications = async()=>{
-            console.log("Hey ho c'est un device")
             const {status : existingStatus} = await Notification.getPermissionsAsync()
             console.log(existingStatus)
             console.log("-------------------------------------------")
@@ -36,7 +35,7 @@ const Home = ({ navigation }) => {
             if(fStatus!=='granted'){
                 setError('You say, I should not pass !')
             }
-            const token = (await Notification.getDevicePushTokenAsync())
+            const token = (await Notification.getExpoPushTokenAsync)
             console.log(token)
             setTokenExpo(token.data)
 
@@ -80,6 +79,10 @@ const Home = ({ navigation }) => {
         Notification.addNotificationResponseReceivedListener(
             response => {
                 console.log("data => ", response.notification.request.content.body)
+                // {type : 'product', id: 13}
+                // navigation.navigate('product')
+                // {type : 'order', id: 9856845158}
+                // {url : 'order?id=9856845158'}
             }
         )
         subscrireToNotifications()
@@ -88,6 +91,10 @@ const Home = ({ navigation }) => {
             .catch(_e => setcanSendSMS(false))
         callAPI()
     }, [])
+    useEffect(()=> {
+        //Verifier le token
+        //Call API pour envoyer le token
+    }, [tokenExpo])
 // => weather_descriptions => weather_icons ( array )
     return (
         <SafeArea>
@@ -101,11 +108,6 @@ const Home = ({ navigation }) => {
                     ? <Text>{error}</Text>
                     : null
                 }
-                {!loading 
-                    ? <Weather weathers={data}/> 
-                    : <Text>en chargement</Text>
-                }
-                <Weather.WeatherIcons />
                 <StatusBar style="auto" />
                 <Button onPress={handlePress}>Changer De Page</Button>
                 {canSendSMS ?<Text>Fonction SMS disponible</Text> :<Text>Ne peux pas envoyer de SMS</Text>}
